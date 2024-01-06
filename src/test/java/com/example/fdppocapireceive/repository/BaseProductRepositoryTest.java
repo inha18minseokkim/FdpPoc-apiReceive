@@ -44,5 +44,24 @@ class BaseProductRepositoryTest {
         log.info("결과 : {}", baseProduct);
         Assertions.assertEquals(baseProduct.getIsAvailable(),true);
     }
+    @Test
+    void insertBaseProduct() {
+        BaseProduct tempBaseProduct = BaseProduct.builder()
+                .categoryCode("100")
+                .itemCode("111")
+                .kindCode("01")
+                .classCode("01")
+                .rankCode("04")
+                .categoryName("식량작물")
+                .itemName("쌀")
+                .kindName("20kg")
+                .gradeName("상품")
+                .unitName("kg")
+                .unitValue(20.0F)
+                .isAvailable(true)
+                .build();
+        repository.save(tempBaseProduct);
+
+    }
 }
 

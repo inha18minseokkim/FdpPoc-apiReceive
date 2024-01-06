@@ -46,8 +46,8 @@ public class ReceiveTasklet implements Tasklet {
             return targetRegion.stream().flatMap((regionCode) -> {
                 RequestDTO requestDTO = RequestDTO.builder().pCertKey(kamisSecret).pCertId(kamisId)
                         .pReturntype("json")
-                        .pStartday("2023-01-04")
-                        .pEndday("2023-01-04")
+                        .pStartday("2024-01-04")
+                        .pEndday("2024-01-04")
                         .pConvertKgYn("N")
                         .pItemcategorycode(availableProduct.getCategoryCode())
                         .pItemcode(availableProduct.getItemCode())

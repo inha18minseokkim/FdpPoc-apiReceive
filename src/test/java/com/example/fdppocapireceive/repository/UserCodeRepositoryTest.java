@@ -35,7 +35,7 @@ class UserCodeRepositoryTest {
     @Transactional
     void readTest() {
         List<UserGroupCode> kamisApiRegionCodes = userGroupCodeRepository.findAllByCodeDetailNameAndUseInfo("KamisApiRegionCode", true);
-        List<UserCode> userCodes = kamisApiRegionCodes.getFirst().getUserCodes();
+        List<UserCode> userCodes = kamisApiRegionCodes.get(0).getUserCodes();
         log.info("결과 : {}", userCodes);
         Optional<UserCode> seoul = userCodeRepository.findByCodeDetailName("1101");
         log.info("결과 : {}",seoul);

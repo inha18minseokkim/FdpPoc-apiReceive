@@ -1,12 +1,18 @@
 package com.example.fdppocapireceive.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(uniqueConstraints = {@UniqueConstraint(name="productUnique",columnNames = {"categoryCode","itemCode","kindCode","classCode","rankCode"})})
 public class BaseProduct {
     @Id

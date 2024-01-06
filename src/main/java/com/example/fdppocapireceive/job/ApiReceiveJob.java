@@ -27,12 +27,12 @@ public class ApiReceiveJob {
 
     @Bean
     public JobExecution jobExecution(JobRepository jobRepository,PlatformTransactionManager transactionManager) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        return jobLauncher(jobRepository).run(
+        return dailyJobLauncher(jobRepository).run(
             dailyReceiveJob(jobRepository,transactionManager),jobParameters()
         );
     }
     @Bean
-    public JobLauncher jobLauncher(JobRepository jobRepository){
+    public JobLauncher dailyJobLauncher(JobRepository jobRepository){
         TaskExecutorJobLauncher taskExecutorJobLauncher = new TaskExecutorJobLauncher();
         taskExecutorJobLauncher.setJobRepository(jobRepository);
         taskExecutorJobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
