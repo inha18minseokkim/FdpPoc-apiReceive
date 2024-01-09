@@ -48,16 +48,16 @@ class BaseProductRepositoryTest {
     void insertBaseProduct() {
         BaseProduct tempBaseProduct = BaseProduct.builder()
                 .categoryCode("100")
-                .itemCode("111")
+                .itemCode("152")
                 .kindCode("01")
                 .classCode("01")
                 .rankCode("04")
                 .categoryName("식량작물")
-                .itemName("쌀")
-                .kindName("20kg")
+                .itemName("감자")
+                .kindName("수미(노지)")
                 .gradeName("상품")
                 .unitName("kg")
-                .unitValue(20.0F)
+                .unitValue(1F)
                 .isAvailable(true)
                 .build();
         repository.save(tempBaseProduct);

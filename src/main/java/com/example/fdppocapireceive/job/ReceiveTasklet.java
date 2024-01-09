@@ -19,6 +19,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,18 +38,25 @@ public class ReceiveTasklet implements Tasklet {
     private String kamisSecret;
     @Value("${PROCESS_DATE}")
     private String processDate;
+    @Value("${START_DATE}")
+    private String startDate;
+    @Value("${END_DATE}")
+    private String endDate;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         List<BaseProduct> availableProducts = baseProductRepository.findAllByIsAvailableEquals(true);
         List<UserCode> targetRegion = userGroupCodeRepository.findAllByCodeDetailNameAndUseInfo("KamisApiRegionCode", true).get(0).getUserCodes();
         log.info("지역 총 {}건 로드 완료",targetRegion.size());
+        String requestStartDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String requestEndDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         availableProducts.stream().flatMap((availableProduct) -> {
             return targetRegion.stream().flatMap((regionCode) -> {
                 RequestDTO requestDTO = RequestDTO.builder().pCertKey(kamisSecret).pCertId(kamisId)
                         .pReturntype("json")
-                        .pStartday("2024-01-04")
-                        .pEndday("2024-01-04")
+                        .pStartday(requestStartDate)
+                        .pEndday(requestEndDate)
                         .pConvertKgYn("N")
                         .pItemcategorycode(availableProduct.getCategoryCode())
                         .pItemcode(availableProduct.getItemCode())
@@ -59,20 +68,25 @@ public class ReceiveTasklet implements Tasklet {
                 return apiReceive.RequestFromServer(requestDTO).getData().getItems().stream()
                         .filter((itemDTO -> !itemDTO.getItemname().equals("[]")))
                         .map((itemDTO -> {
-                            OriginalPriceInfo priceData = OriginalPriceInfo.builder()
-                                    .baseDate(processDate)
-                                    .regionInfo(regionCode)
-                                    .baseProduct(availableProduct)
-                                    .storeName(itemDTO.getMarketname())
-                                    .itemName(itemDTO.getItemname())
-                                    .kindName(itemDTO.getKindname())
-                                    .price(Long.parseLong(itemDTO.getPrice().replace(",","")))
-                                    .build();
-                            return priceData;
+                            try {
+                                OriginalPriceInfo priceData = OriginalPriceInfo.builder()
+                                        .baseDate(itemDTO.getYyyy() + itemDTO.getRegday().replace("/", ""))
+                                        .regionInfo(regionCode)
+                                        .baseProduct(availableProduct)
+                                        .storeName(itemDTO.getMarketname())
+                                        .itemName(itemDTO.getItemname())
+                                        .kindName(itemDTO.getKindname())
+                                        .price(Long.parseLong(itemDTO.getPrice().replace(",", "")))
+                                        .build();
+                                return priceData;
+                            } catch(NumberFormatException e){
+                                log.error("변환 이상 객체 탐지 : {}",itemDTO);
+                                return null;
+                            }
                         }));
                 });
 
-        }).forEach((element) -> originalPririceInfoRepository.save(element));
+        }).filter((element) -> element != null).forEach((element) -> originalPririceInfoRepository.save(element));
         return RepeatStatus.FINISHED;
     }
 }
