@@ -1,19 +1,14 @@
 package com.example.fdppocapireceive.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name="productUnique",columnNames = {"categoryCode","itemCode","kindCode","classCode","rankCode"})})
+@ToString
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"categoryCode","itemCode","kindCode","classCode","gradeCode"})})
 public class BaseProduct {
     @Id
     @GeneratedValue
@@ -27,7 +22,7 @@ public class BaseProduct {
     @Column(length=2)
     private String classCode;           //whls_rtl_dcd
     @Column(length=2)
-    private String rankCode;            //pd_grade_cd
+    private String gradeCode;            //pd_grade_cd
     private String unitName;            //snog_unit_nm
     private Float unitValue;            //snog_unit_val
     private Boolean isAvailable;            //사용여부
@@ -36,5 +31,6 @@ public class BaseProduct {
     private String kindName;
     private String gradeName;
     @OneToMany(mappedBy = "baseProduct",fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<InnerProduct> innerProducts;
 }

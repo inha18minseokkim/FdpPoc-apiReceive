@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(uniqueConstraints = {@UniqueConstraint(name="OriginalPriceUnique",columnNames = {"baseDate","regionInfoId","baseProductId","storeName"})})
 public class OriginalPriceInfo {
     @Id
