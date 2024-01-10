@@ -9,6 +9,9 @@ import java.util.List;
 @Data
 @ToString
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"categoryCode","itemCode","kindCode","classCode","gradeCode"})})
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BaseProduct {
     @Id
     @GeneratedValue

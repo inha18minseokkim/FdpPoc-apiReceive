@@ -1,13 +1,15 @@
 package com.example.fdppocapireceive.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DataDTO {
     @JsonProperty("error_code")
     private String errorCode;

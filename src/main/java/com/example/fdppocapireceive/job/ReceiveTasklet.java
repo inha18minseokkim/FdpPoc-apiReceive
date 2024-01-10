@@ -61,7 +61,7 @@ public class ReceiveTasklet implements Tasklet {
                         .pItemcategorycode(availableProduct.getCategoryCode())
                         .pItemcode(availableProduct.getItemCode())
                         .pKindcode(availableProduct.getKindCode())
-                        .pProductrankcode(availableProduct.getRankCode())
+                        .pProductrankcode(availableProduct.getGradeCode())
                         .pCountrycode(regionCode.getCodeDetailName())
                         .pProductclscode(availableProduct.getClassCode())
                         .build();

@@ -45,13 +45,14 @@ class BaseProductRepositoryTest {
         Assertions.assertEquals(baseProduct.getIsAvailable(),true);
     }
     @Test
+    @Transactional
     void insertBaseProduct() {
         BaseProduct tempBaseProduct = BaseProduct.builder()
                 .categoryCode("100")
                 .itemCode("152")
                 .kindCode("01")
                 .classCode("01")
-                .rankCode("04")
+                .gradeCode("04")
                 .categoryName("식량작물")
                 .itemName("감자")
                 .kindName("수미(노지)")

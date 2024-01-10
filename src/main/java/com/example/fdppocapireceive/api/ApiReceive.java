@@ -1,10 +1,7 @@
 package com.example.fdppocapireceive.api;
 
 import com.example.fdppocapireceive.config.ObjectMapperConfig;
-import com.example.fdppocapireceive.dto.ConditionDTO;
-import com.example.fdppocapireceive.dto.DataDTO;
-import com.example.fdppocapireceive.dto.RequestDTO;
-import com.example.fdppocapireceive.dto.ResponseDTO;
+import com.example.fdppocapireceive.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,8 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 
 @Component
@@ -64,7 +63,18 @@ public class ApiReceive {
             try {
                 return objectMapper.readValue(element, ResponseDTO.class);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                try{
+                    EmptyResponseDTO emptyResponseDTO = objectMapper.readValue(element, EmptyResponseDTO.class);
+                    log.error("빈 객체 데이터 리턴 : {}",emptyResponseDTO);
+                    return ResponseDTO.builder()
+                            .data(DataDTO.builder().items(List.of()).errorCode("001").build())
+                            .condition(List.of(ConditionDTO.builder().build()))
+                            .build();
+                } catch(JsonProcessingException e1){
+                    log.error("url 호출 후 매핑 시 에러 발생 : {}",finalUrl);
+                    e.printStackTrace();
+                    throw new RuntimeException(e1);
+                }
             }
         }); // block to get the result, handle this properly in a non-blocking environment
 

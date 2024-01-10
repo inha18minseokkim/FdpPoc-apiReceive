@@ -2,11 +2,13 @@ package com.example.fdppocapireceive.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConditionDTO {
     @JsonProperty("p_startday")
     private String pStartday;
