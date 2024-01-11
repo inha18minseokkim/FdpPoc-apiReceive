@@ -5,27 +5,22 @@ import com.example.fdppocapireceive.dto.RequestDTO;
 import com.example.fdppocapireceive.entity.BaseProduct;
 import com.example.fdppocapireceive.entity.OriginalPriceInfo;
 import com.example.fdppocapireceive.entity.UserCode;
-import com.example.fdppocapireceive.entity.UserGroupCode;
 import com.example.fdppocapireceive.repository.BaseProductRepository;
 import com.example.fdppocapireceive.repository.OriginalPririceInfoRepository;
 import com.example.fdppocapireceive.repository.UserGroupCodeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -67,7 +62,8 @@ public class ReceiveTasklet implements Tasklet {
                     .pCountrycode(regionCode.getCodeDetailName())
                     .pProductclscode(availableProduct.getClassCode())
                     .build();
-            return apiReceive.RequestFromServer(requestDTO).getData().getItems().stream()
+            return apiReceive
+                    .RequestFromServer(requestDTO).getData().getItems().stream()
                     .filter((itemDTO -> !itemDTO.getItemname().equals("[]")))
                     .map((itemDTO -> {
                         try {
