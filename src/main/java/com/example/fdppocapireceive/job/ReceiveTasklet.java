@@ -17,11 +17,14 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -50,43 +53,56 @@ public class ReceiveTasklet implements Tasklet {
         log.info("지역 총 {}건 로드 완료",targetRegion.size());
         String requestStartDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String requestEndDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        availableProducts.stream().flatMap((availableProduct) -> {
-            return targetRegion.stream().flatMap((regionCode) -> {
-                RequestDTO requestDTO = RequestDTO.builder().pCertKey(kamisSecret).pCertId(kamisId)
-                        .pReturntype("json")
-                        .pStartday(requestStartDate)
-                        .pEndday(requestEndDate)
-                        .pConvertKgYn("N")
-                        .pItemcategorycode(availableProduct.getCategoryCode())
-                        .pItemcode(availableProduct.getItemCode())
-                        .pKindcode(availableProduct.getKindCode())
-                        .pProductrankcode(availableProduct.getGradeCode())
-                        .pCountrycode(regionCode.getCodeDetailName())
-                        .pProductclscode(availableProduct.getClassCode())
-                        .build();
-                return apiReceive.RequestFromServer(requestDTO).getData().getItems().stream()
-                        .filter((itemDTO -> !itemDTO.getItemname().equals("[]")))
-                        .map((itemDTO -> {
-                            try {
-                                OriginalPriceInfo priceData = OriginalPriceInfo.builder()
-                                        .baseDate(itemDTO.getYyyy() + itemDTO.getRegday().replace("/", ""))
-                                        .regionInfo(regionCode)
-                                        .baseProduct(availableProduct)
-                                        .storeName(itemDTO.getMarketname())
-                                        .itemName(itemDTO.getItemname())
-                                        .kindName(itemDTO.getKindname())
-                                        .price(Long.parseLong(itemDTO.getPrice().replace(",", "")))
-                                        .build();
-                                return priceData;
-                            } catch(NumberFormatException e){
-                                log.error("변환 이상 객체 탐지 : {}",itemDTO);
-                                return null;
-                            }
-                        }));
-                });
-
-        }).filter((element) -> element != null).forEach((element) -> originalPririceInfoRepository.save(element));
+        //이렇게 짜지 말자
+        availableProducts.stream().flatMap((availableProduct) -> targetRegion.stream().flatMap((regionCode) -> {
+            RequestDTO requestDTO = RequestDTO.builder().pCertKey(kamisSecret).pCertId(kamisId)
+                    .pReturntype("json")
+                    .pStartday(requestStartDate)
+                    .pEndday(requestEndDate)
+                    .pConvertKgYn("N")
+                    .pItemcategorycode(availableProduct.getCategoryCode())
+                    .pItemcode(availableProduct.getItemCode())
+                    .pKindcode(availableProduct.getKindCode())
+                    .pProductrankcode(availableProduct.getGradeCode())
+                    .pCountrycode(regionCode.getCodeDetailName())
+                    .pProductclscode(availableProduct.getClassCode())
+                    .build();
+            return apiReceive.RequestFromServer(requestDTO).getData().getItems().stream()
+                    .filter((itemDTO -> !itemDTO.getItemname().equals("[]")))
+                    .map((itemDTO -> {
+                        try {
+                            OriginalPriceInfo priceData = OriginalPriceInfo.builder()
+                                    .baseDate(itemDTO.getYyyy() + itemDTO.getRegday().replace("/", ""))
+                                    .regionInfo(regionCode)
+                                    .baseProduct(availableProduct)
+                                    .storeName(itemDTO.getMarketname())
+                                    .itemName(itemDTO.getItemname())
+                                    .kindName(itemDTO.getKindname())
+                                    .price(Long.parseLong(itemDTO.getPrice().replace(",", "")))
+                                    .build();
+                            return priceData;
+                        } catch(NumberFormatException e){
+                            log.error("변환 이상 객체 탐지 : {}",itemDTO);
+                            return null;
+                        }
+                    }));
+            })).filter((element) -> element != null).forEach((element) -> {
+            OriginalPriceInfo originalPriceInfo = getAndMergeEntity(element);
+            originalPririceInfoRepository.save(originalPriceInfo);
+        });
         return RepeatStatus.FINISHED;
+    }
+    private OriginalPriceInfo getAndMergeEntity(OriginalPriceInfo element) {
+        Optional<OriginalPriceInfo> existedEntity = originalPririceInfoRepository
+                .findOriginalPriceInfoByUnique(element.getBaseDate(), element.getBaseProduct(), element.getRegionInfo(), element.getStoreName());
+        OriginalPriceInfo originalPriceInfo = existedEntity.orElse(element);
+        originalPriceInfo.setBaseDate(element.getBaseDate());
+        originalPriceInfo.setRegionInfo(element.getRegionInfo());
+        originalPriceInfo.setBaseProduct(element.getBaseProduct());
+        originalPriceInfo.setStoreName(element.getStoreName());
+        originalPriceInfo.setItemName(element.getItemName());
+        originalPriceInfo.setKindName(element.getKindName());
+        originalPriceInfo.setPrice(element.getPrice());
+        return originalPriceInfo;
     }
 }
