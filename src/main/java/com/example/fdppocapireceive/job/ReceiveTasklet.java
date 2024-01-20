@@ -50,6 +50,7 @@ public class ReceiveTasklet implements Tasklet {
         String requestEndDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         //이렇게 짜지 말자
         availableProducts.stream().flatMap((availableProduct) -> targetRegion.stream().flatMap((regionCode) -> {
+            log.info("상품 id {} 에 대한 수집 시작", availableProduct.getId());
             RequestDTO requestDTO = RequestDTO.builder().pCertKey(kamisSecret).pCertId(kamisId)
                     .pReturntype("json")
                     .pStartday(requestStartDate)

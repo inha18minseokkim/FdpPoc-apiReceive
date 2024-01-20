@@ -1,7 +1,6 @@
 package com.example.fdppocapireceive.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -16,14 +15,14 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserGroupCode {
+public class InnerCategory {
     @Id
-    @GeneratedValue
     private Long id;
-    private String codeDetailName;
-    private String description;
+    private String innerCategoryName;
     private Long orderSequence;
-    private Boolean useInfo;
+    private String additionalDescription;
+    private Boolean isAvailable;
     @OneToMany
-    private List<UserCode> userCodes;
+    private List<InnerProduct> subProducts;
+
 }

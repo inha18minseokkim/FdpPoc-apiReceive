@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InnerProduct {
+@Table(uniqueConstraints = @UniqueConstraint(name="CustomerInterestUnique",columnNames = {"customerId","categoryCode","itemCode","kindCode","classCode","gradeCode"}))
+public class CustomerInterestProduct {
     @Id
     @GeneratedValue
     private Long id;
@@ -22,22 +23,11 @@ public class InnerProduct {
             @JoinColumn(name = "kindCode",referencedColumnName="kindCode"),
             @JoinColumn(name = "classCode",referencedColumnName="classCode"),
             @JoinColumn(name = "gradeCode",referencedColumnName="gradeCode")},
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    ) //joinColumn 쓰는 이유 : baseProduct는 실제 운영환경에서 안쓸거임. + 원본 코드 보존이 필요함(이력도 마찬가지)
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private BaseProduct baseProduct;
-
-    private Boolean isMainMaterial;
-    private Boolean isAvailable;
     @ManyToOne
-    @JoinColumns(
-            value = @JoinColumn(name="innerCategoryId",referencedColumnName = "id"),
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
-    private InnerCategory innerCategory;
-    private Long orderSequence;
-    private String productName;
-    private String additionalDescription;
-    private Boolean isSeasonal;
-    private String seasonStartDate;
-    private String seasonEndDate;
+    @JoinColumn(name = "customerId", referencedColumnName = "customerId",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private MemberInfo memberInfo;
+    private Boolean isAvailable;
 }
+

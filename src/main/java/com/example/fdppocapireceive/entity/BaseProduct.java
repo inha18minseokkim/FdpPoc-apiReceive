@@ -8,10 +8,10 @@ import java.util.List;
 @Entity
 @Data
 @ToString
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"categoryCode","itemCode","kindCode","classCode","gradeCode"})})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"categoryCode","itemCode","kindCode","classCode","gradeCode"})})
 public class BaseProduct {
     @Id
     @GeneratedValue
