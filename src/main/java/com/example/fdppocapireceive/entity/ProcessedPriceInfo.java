@@ -1,5 +1,4 @@
 package com.example.fdppocapireceive.entity;
-
 import com.example.fdppocapireceive.code.BaseRange;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

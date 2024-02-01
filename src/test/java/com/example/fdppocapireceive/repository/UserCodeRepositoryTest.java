@@ -34,10 +34,10 @@ class UserCodeRepositoryTest {
     @Test
     @Transactional
     void readTest() {
-        List<UserGroupCode> kamisApiRegionCodes = userGroupCodeRepository.findAllByCodeDetailNameAndUseInfo("KamisApiRegionCode", true);
-        List<UserCode> userCodes = kamisApiRegionCodes.get(0).getUserCodes();
+        UserGroupCode kamisApiRegionCodes = userGroupCodeRepository.findById("FDPREGN1101").get();
+        List<UserCode> userCodes = kamisApiRegionCodes.getUserCodes();
         log.info("결과 : {}", userCodes);
-        Optional<UserCode> seoul = userCodeRepository.findByCodeDetailName("1101");
+        Optional<UserCode> seoul = userCodeRepository.findById("1101");
         log.info("결과 : {}",seoul);
         Assertions.assertThat(userCodes).contains(seoul.get());
     }

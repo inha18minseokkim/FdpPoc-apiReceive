@@ -5,8 +5,10 @@ import com.example.fdppocapireceive.dto.RequestDTO;
 import com.example.fdppocapireceive.entity.BaseProduct;
 import com.example.fdppocapireceive.entity.OriginalPriceInfo;
 import com.example.fdppocapireceive.entity.UserCode;
+import com.example.fdppocapireceive.entity.UserGroupCode;
 import com.example.fdppocapireceive.repository.BaseProductRepository;
 import com.example.fdppocapireceive.repository.OriginalPririceInfoRepository;
+import com.example.fdppocapireceive.repository.UserCodeRepository;
 import com.example.fdppocapireceive.repository.UserGroupCodeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import java.util.Optional;
 public class ReceiveTasklet implements Tasklet {
     private final BaseProductRepository baseProductRepository;
     private final UserGroupCodeRepository userGroupCodeRepository;
+    private final UserCodeRepository userCodeRepository;
     private final OriginalPririceInfoRepository originalPririceInfoRepository;
     private final ApiReceive apiReceive;
     @Value("${KAMIS_ID}")
@@ -44,7 +47,8 @@ public class ReceiveTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         List<BaseProduct> availableProducts = baseProductRepository.findAllByIsAvailableEquals(true);
-        List<UserCode> targetRegion = userGroupCodeRepository.findAllByCodeDetailNameAndUseInfo("KamisApiRegionCode", true).get(0).getUserCodes();
+        UserGroupCode fdpRegn9999 = userGroupCodeRepository.findById("FDPREGN9999").orElseThrow();
+        List<UserCode> targetRegion = userCodeRepository.findAllByUserGroupCodeAndUseInfo(fdpRegn9999,true);
         log.info("지역 총 {}건 로드 완료",targetRegion.size());
         String requestStartDate = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String requestEndDate = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyyMMdd")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));

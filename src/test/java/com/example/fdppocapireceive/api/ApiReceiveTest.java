@@ -3,31 +3,11 @@ package com.example.fdppocapireceive.api;
 import com.example.fdppocapireceive.config.ObjectMapperConfig;
 import com.example.fdppocapireceive.dto.RequestDTO;
 import com.example.fdppocapireceive.dto.ResponseDTO;
-import com.example.fdppocapireceive.repository.BaseProductRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
-import org.springframework.boot.autoconfigure.batch.BatchDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import javax.sql.DataSource;
-
-import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest
 @ContextConfiguration(classes = {ApiReceive.class, ObjectMapperConfig.class})

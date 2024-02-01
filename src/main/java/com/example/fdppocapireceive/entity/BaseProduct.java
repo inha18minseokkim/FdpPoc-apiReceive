@@ -3,8 +3,6 @@ package com.example.fdppocapireceive.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Data
 @ToString
@@ -33,7 +31,8 @@ public class BaseProduct {
     private String itemName;
     private String kindName;
     private String gradeName;
-    @OneToMany(mappedBy = "baseProduct",fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="innerProductId",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @ToString.Exclude
-    private List<InnerProduct> innerProducts;
+    private InnerProduct innerProduct;
 }

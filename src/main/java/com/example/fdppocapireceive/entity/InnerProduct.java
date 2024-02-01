@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @Builder
@@ -13,26 +15,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InnerProduct {
     @Id
-    @GeneratedValue
-    private Long id;
-    @ManyToOne
-    @JoinColumns(value = {
-            @JoinColumn(name = "categoryCode",referencedColumnName="categoryCode"),
-            @JoinColumn(name = "itemCode",referencedColumnName="itemCode"),
-            @JoinColumn(name = "kindCode",referencedColumnName="kindCode"),
-            @JoinColumn(name = "classCode",referencedColumnName="classCode"),
-            @JoinColumn(name = "gradeCode",referencedColumnName="gradeCode")},
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    ) //joinColumn 쓰는 이유 : baseProduct는 실제 운영환경에서 안쓸거임. + 원본 코드 보존이 필요함(이력도 마찬가지)
-    private BaseProduct baseProduct;
+    private String id;
+
+    @OneToMany(mappedBy = "innerProduct",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<BaseProduct> baseProducts;
 
     private Boolean isMainMaterial;
     private Boolean isAvailable;
-    @ManyToOne
-    @JoinColumns(
-            value = @JoinColumn(name="innerCategoryId",referencedColumnName = "id"),
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="innerCategoryId",referencedColumnName = "id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private InnerCategory innerCategory;
     private Long orderSequence;
     private String productName;

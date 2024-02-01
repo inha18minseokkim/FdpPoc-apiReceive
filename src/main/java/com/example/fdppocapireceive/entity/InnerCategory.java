@@ -1,12 +1,7 @@
 package com.example.fdppocapireceive.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
@@ -17,12 +12,14 @@ import java.util.List;
 @NoArgsConstructor
 public class InnerCategory {
     @Id
+    @GeneratedValue
     private Long id;
     private String innerCategoryName;
     private Long orderSequence;
     private String additionalDescription;
     private Boolean isAvailable;
-    @OneToMany
+    @OneToMany(mappedBy = "innerCategory",cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<InnerProduct> subProducts;
 
 }

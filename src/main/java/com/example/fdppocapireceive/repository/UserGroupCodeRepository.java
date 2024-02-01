@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserGroupCodeRepository extends JpaRepository<UserGroupCode,Long> {
+public interface UserGroupCodeRepository extends JpaRepository<UserGroupCode,String> {
     List<UserGroupCode> findAllByCodeDetailNameAndUseInfo(String codeDetailName,Boolean useInfo);
 }
